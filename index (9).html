@@ -2735,23 +2735,23 @@
       }
     }
 
-    function navigateToProduct(id) {
-      if (window.STATIC_EXPORT_MODE) {
-        window.location.href = (window.BASE_PATH || '') + 'producto/' + encodeURIComponent(id) + '/';
+    window.navigateToProduct = function(id) {
+      if (window.STATIC_EXPORT_MODE && window.location.protocol !== 'file:') {
+        const bp = window.BASE_PATH || '';
+        window.location.href = bp + 'producto/' + encodeURIComponent(id) + '/';
       } else {
         navigateToHash('producto-' + id);
       }
-    }
-    window.navigateToProduct = navigateToProduct;
+    };
 
-    function goToProductsPage() {
-      if (window.STATIC_EXPORT_MODE) {
-        window.location.href = (window.BASE_PATH || '') + 'productos/';
+    window.goToProductsPage = function() {
+      if (window.STATIC_EXPORT_MODE && window.location.protocol !== 'file:') {
+        const bp = window.BASE_PATH || '';
+        window.location.href = bp + 'productos/';
       } else {
         navigateToHash('#productos');
       }
-    }
-    window.goToProductsPage = goToProductsPage;
+    };
 
     window.adjustCardQty = function(id, delta, maxStock, isCarousel) {
       const inputId = isCarousel ? 'qty-carousel-' + id : 'qty-' + id;
@@ -4564,7 +4564,27 @@
         }
 
         if (!hash || hash === '#' || hash === '#/' || hash === '#inicio' || hash === '#home') {
-          hash = '#inicio';
+          // If hash is not set, inspect window.location.pathname for clean URLs (e.g. /producto/p1, /productos, /nosotros)
+          const curPath = (window.location.pathname || '').toLowerCase();
+          if (curPath.includes('/producto/')) {
+            const pathParts = (window.location.pathname || '').split(//producto//i);
+            if (pathParts[1]) {
+              const rawId = pathParts[1].replace(//$/, '').replace(/.html$/, '');
+              if (rawId) {
+                hash = '#producto-' + decodeURIComponent(rawId);
+              } else {
+                hash = '#productos';
+              }
+            }
+          } else if (curPath.endsWith('/productos') || curPath.endsWith('/productos/') || curPath.endsWith('/productos.html')) {
+            hash = '#productos';
+          } else if (curPath.endsWith('/nosotros') || curPath.endsWith('/nosotros/') || curPath.endsWith('/nosotros.html') || curPath.endsWith('/sobre-nosotros')) {
+            hash = '#sobre-nosotros';
+          } else if (curPath.endsWith('/contacto') || curPath.endsWith('/contacto/') || curPath.endsWith('/contacto.html')) {
+            hash = '#contacto';
+          } else {
+            hash = '#inicio';
+          }
         }
 
         if (hash === '#producto') {

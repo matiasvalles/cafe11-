@@ -1,1 +1,7 @@
-/api/*  /api/:splat  200
+/api/* /api/:splat 200
+/producto/:id /producto/:id/index.html 200
+/producto/:id/ /producto/:id/index.html 200
+/productos /productos/index.html 200
+/nosotros /nosotros/index.html 200
+/contacto /contacto/index.html 200
+/checkout /checkout/index.html 200

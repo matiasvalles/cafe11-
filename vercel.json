@@ -3,15 +3,7 @@
   "trailingSlash": false,
   "rewrites": [
     {
-      "source": "/api/(.*)",
-      "destination": "/api/$1"
-    },
-    {
       "source": "/producto/:id",
-      "destination": "/producto/:id/index.html"
-    },
-    {
-      "source": "/producto/:id/",
       "destination": "/producto/:id/index.html"
     },
     {

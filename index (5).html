@@ -4887,6 +4887,18 @@
           if (document.body) document.body.scrollTop = 0;
         }
       } else if (hash === '#checkout') {
+        if (!isBuilderMode && (!cart || cart.length === 0)) {
+          // If cart is empty and user opened #checkout directly, redirect to #inicio cleanly
+          if (window.location.hash) {
+            try {
+              window.history.replaceState("", document.title, window.location.pathname + window.location.search);
+            } catch (e) {
+              try { window.location.hash = ''; } catch (err) {}
+            }
+          }
+          handleRouting(false, '#inicio');
+          return;
+        }
         builderSections.forEach(sec => {
           const secType = sec.dataset.type;
           if (secType === 'footer' || sec.id.includes('sec-footer') || sec.id.toLowerCase().includes('footer')) {
@@ -6710,8 +6722,8 @@
           navigateToHash('#pedido-' + orderId);
         } else if (mpStatus === 'rejected' || mpStatus === 'failure') {
           updateCartUI();
-          window.history.replaceState({}, document.title, cleanPath + '#checkout');
-          navigateToHash('#checkout');
+          window.history.replaceState({}, document.title, cleanPath);
+          navigateToHash('#inicio');
           setTimeout(() => {
             showModal('Pago No Completado', 'El pago no se realizó en Mercado Pago. Mantenemos tu carrito intacto con todos los productos para que puedas intentar nuevamente.');
           }, 300);

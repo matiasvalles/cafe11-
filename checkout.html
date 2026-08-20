@@ -6660,44 +6660,43 @@
       if (window.mpReturnChecked || mpReturnChecked) return;
       try {
         const urlParams = new URLSearchParams(window.location.search);
-        const hashParams = new URLSearchParams(window.location.hash.replace(/^#/, ''));
+        const hashParams = new URLSearchParams((window.location.hash || '').replace(/^#/, ''));
 
-        const mpStatus = urlParams.get('mp_status') || urlParams.get('status') || urlParams.get('collection_status') || hashParams.get('mp_status') || hashParams.get('status');
-        const wasRedirected = localStorage.getItem('mp_checkout_redirect_flag') === '1';
+        // Only process if actual Mercado Pago return query parameters exist in the URL
+        const mpStatus = urlParams.get('mp_status') || urlParams.get('collection_status') || hashParams.get('mp_status') || (urlParams.get('preference_id') && urlParams.get('status') ? urlParams.get('status') : null);
 
-        if (mpStatus || wasRedirected) {
-          mpReturnChecked = true;
-          window.mpReturnChecked = true;
+        if (!mpStatus) {
           localStorage.removeItem('mp_checkout_redirect_flag');
+          return;
+        }
 
-          const cleanPath = window.location.pathname;
+        mpReturnChecked = true;
+        window.mpReturnChecked = true;
+        localStorage.removeItem('mp_checkout_redirect_flag');
 
-          if (mpStatus === 'approved' || mpStatus === 'success') {
-            cart = [];
-            saveCartToStorage();
-            updateCartUI();
-            const orderId = urlParams.get('external_reference') || urlParams.get('preference_id') || ('ORD-' + Math.floor(100000 + Math.random() * 900000));
-            window.history.replaceState({}, document.title, cleanPath + '#pedido-' + orderId);
-            navigateToHash('#pedido-' + orderId);
-          } else if (mpStatus === 'pending') {
-            cart = [];
-            saveCartToStorage();
-            updateCartUI();
-            const orderId = urlParams.get('external_reference') || urlParams.get('preference_id') || ('ORD-' + Math.floor(100000 + Math.random() * 900000));
-            window.history.replaceState({}, document.title, cleanPath + '#pedido-' + orderId);
-            navigateToHash('#pedido-' + orderId);
-          } else {
-            // Volvió sin completar el pago o fue rechazado/cancelado.
-            // Redirigir a la página de pago (#checkout) con todos los productos del carrito intactos.
-            updateCartUI();
-            window.history.replaceState({}, document.title, cleanPath + '#checkout');
-            navigateToHash('#checkout');
-            if (mpStatus === 'rejected' || mpStatus === 'failure') {
-              setTimeout(() => {
-                showModal('Pago No Completado', 'El pago no se realizó en Mercado Pago. Mantenemos tu carrito intacto con todos los productos para que puedas intentar nuevamente.');
-              }, 300);
-            }
-          }
+        const cleanPath = window.location.pathname;
+
+        if (mpStatus === 'approved' || mpStatus === 'success') {
+          cart = [];
+          saveCartToStorage();
+          updateCartUI();
+          const orderId = urlParams.get('external_reference') || urlParams.get('preference_id') || ('ORD-' + Math.floor(100000 + Math.random() * 900000));
+          window.history.replaceState({}, document.title, cleanPath + '#pedido-' + orderId);
+          navigateToHash('#pedido-' + orderId);
+        } else if (mpStatus === 'pending') {
+          cart = [];
+          saveCartToStorage();
+          updateCartUI();
+          const orderId = urlParams.get('external_reference') || urlParams.get('preference_id') || ('ORD-' + Math.floor(100000 + Math.random() * 900000));
+          window.history.replaceState({}, document.title, cleanPath + '#pedido-' + orderId);
+          navigateToHash('#pedido-' + orderId);
+        } else if (mpStatus === 'rejected' || mpStatus === 'failure') {
+          updateCartUI();
+          window.history.replaceState({}, document.title, cleanPath + '#checkout');
+          navigateToHash('#checkout');
+          setTimeout(() => {
+            showModal('Pago No Completado', 'El pago no se realizó en Mercado Pago. Mantenemos tu carrito intacto con todos los productos para que puedas intentar nuevamente.');
+          }, 300);
         }
       } catch (e) {
         console.warn('Error checking Mercado Pago return:', e);
@@ -6706,9 +6705,6 @@
     window.checkMercadoPagoReturn = checkMercadoPagoReturn;
 
     window.addEventListener('pageshow', function() {
-      checkMercadoPagoReturn();
-    });
-    window.addEventListener('focus', function() {
       checkMercadoPagoReturn();
     });
 

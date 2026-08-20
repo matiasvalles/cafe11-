@@ -2,8 +2,5 @@
   "name": "cafe-11-",
   "version": "1.0.0",
   "type": "module",
-  "scripts": {
-    "build": "echo 'Static multi-page site ready'"
-  },
   "dependencies": {}
 }

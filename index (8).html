@@ -2520,7 +2520,19 @@
 
     // Global routing helper to handle sandboxed iframe hashchange reliability
     window.navigateToHash = function(hash, shouldScroll) {
-      window.location.hash = hash;
+      const clean = (hash || '').replace(/^#/, '').toLowerCase();
+      if (!clean || clean === 'inicio' || clean === 'home') {
+        if (window.location.hash) {
+          try {
+            window.history.pushState("", document.title, window.location.pathname + window.location.search);
+          } catch (e) {
+            window.location.hash = '';
+          }
+        }
+        hash = '#inicio';
+      } else {
+        window.location.hash = hash;
+      }
       const doScroll = shouldScroll !== undefined ? shouldScroll : !isBuilderMode;
       handleRouting(doScroll);
       if (doScroll && !isBuilderMode) {
@@ -4541,6 +4553,10 @@
           hash = '#' + hash.substring(2);
         }
 
+        if (!hash || hash === '#' || hash === '#/' || hash === '#inicio' || hash === '#home') {
+          hash = '#inicio';
+        }
+
         if (hash === '#producto') {
           if (products && products.length > 0) {
             hash = '#producto-' + products[0].id;
@@ -4581,8 +4597,8 @@
         // If route is unrecognized or invalid, navigate to homepage (#inicio)
         if (!isValidRoute) {
           hash = '#inicio';
-          if (window.location.hash !== '#inicio') {
-            window.location.hash = '#inicio';
+          if (window.location.hash && window.location.hash !== '#inicio') {
+            window.location.hash = '';
           }
         }
       
@@ -4962,7 +4978,7 @@
           );
           
           if (!hash || hash === '#' || hash === '#inicio' || hash === '#home') {
-            if (secType === 'footer' || secPage === 'inicio') {
+            if (secType === 'footer' || secPage === 'inicio' || secPage === 'global') {
               sec.style.display = 'block';
             } else {
               sec.style.display = 'none';
@@ -6643,59 +6659,40 @@
         const urlParams = new URLSearchParams(window.location.search);
         const hashParams = new URLSearchParams(window.location.hash.replace(/^#/, ''));
 
-        const mpStatus = urlParams.get('mp_status') || urlParams.get('status') || urlParams.get('collection_status') || hashParams.get('mp_status') || hashParams.get('status');
+        const mpStatus = urlParams.get('mp_status') || urlParams.get('status') || urlParams.get('collection_status') || hashParams.get('mp_status');
 
-        // La marca de "venimos de un redirect a Mercado Pago" solo es válida
-        // por un rato corto: si el comprador abandonó el pago y simplemente
-        // vuelve a navegar el sitio más tarde (o entra por primera vez a
-        // otra página en el mismo navegador), no queremos secuestrar esa
-        // visita y mandarlo al checkout para siempre. Vence a los 15 minutos.
-        // Cualquier valor viejo sin timestamp (p.ej. '1', de versiones
-        // anteriores) se trata como vencido de una, nunca como válido.
-        const REDIRECT_FLAG_TTL_MS = 15 * 60 * 1000;
-        const redirectFlagRaw = localStorage.getItem('mp_checkout_redirect_flag');
-        const redirectFlagTs = redirectFlagRaw ? parseInt(redirectFlagRaw, 10) : NaN;
-        const wasRedirected = !isNaN(redirectFlagTs) && redirectFlagTs > 1000000000000 && (Date.now() - redirectFlagTs) < REDIRECT_FLAG_TTL_MS;
-
-        if (redirectFlagRaw && !mpStatus && !wasRedirected) {
-          // Marca vencida (o de un formato viejo sin timestamp): se limpia
-          // en silencio sin forzar ninguna navegación.
+        if (!mpStatus) {
           localStorage.removeItem('mp_checkout_redirect_flag');
+          return;
         }
 
-        if (mpStatus || wasRedirected) {
-          mpReturnChecked = true;
-          window.mpReturnChecked = true;
-          localStorage.removeItem('mp_checkout_redirect_flag');
+        mpReturnChecked = true;
+        window.mpReturnChecked = true;
+        localStorage.removeItem('mp_checkout_redirect_flag');
 
-          const cleanPath = window.location.pathname;
+        const cleanPath = window.location.pathname;
 
-          if (mpStatus === 'approved' || mpStatus === 'success') {
-            cart = [];
-            saveCartToStorage();
-            updateCartUI();
-            const orderId = urlParams.get('external_reference') || urlParams.get('preference_id') || ('ORD-' + Math.floor(100000 + Math.random() * 900000));
-            window.history.replaceState({}, document.title, cleanPath + '#pedido-' + orderId);
-            navigateToHash('#pedido-' + orderId);
-          } else if (mpStatus === 'pending') {
-            cart = [];
-            saveCartToStorage();
-            updateCartUI();
-            const orderId = urlParams.get('external_reference') || urlParams.get('preference_id') || ('ORD-' + Math.floor(100000 + Math.random() * 900000));
-            window.history.replaceState({}, document.title, cleanPath + '#pedido-' + orderId);
-            navigateToHash('#pedido-' + orderId);
-          } else {
-            // Volvió sin completar el pago o fue rechazado/cancelado.
-            // Redirigir a la página de pago (#checkout) con todos los productos del carrito intactos.
-            updateCartUI();
-            window.history.replaceState({}, document.title, cleanPath + '#checkout');
-            navigateToHash('#checkout');
-            if (mpStatus === 'rejected' || mpStatus === 'failure') {
-              setTimeout(() => {
-                showModal('Pago No Completado', 'El pago no se realizó en Mercado Pago. Mantenemos tu carrito intacto con todos los productos para que puedas intentar nuevamente.');
-              }, 300);
-            }
-          }
+        if (mpStatus === 'approved' || mpStatus === 'success') {
+          cart = [];
+          saveCartToStorage();
+          updateCartUI();
+          const orderId = urlParams.get('external_reference') || urlParams.get('preference_id') || ('ORD-' + Math.floor(100000 + Math.random() * 900000));
+          window.history.replaceState({}, document.title, cleanPath + '#pedido-' + orderId);
+          navigateToHash('#pedido-' + orderId);
+        } else if (mpStatus === 'pending') {
+          cart = [];
+          saveCartToStorage();
+          updateCartUI();
+          const orderId = urlParams.get('external_reference') || urlParams.get('preference_id') || ('ORD-' + Math.floor(100000 + Math.random() * 900000));
+          window.history.replaceState({}, document.title, cleanPath + '#pedido-' + orderId);
+          navigateToHash('#pedido-' + orderId);
+        } else if (mpStatus === 'rejected' || mpStatus === 'failure') {
+          updateCartUI();
+          window.history.replaceState({}, document.title, cleanPath + '#checkout');
+          navigateToHash('#checkout');
+          setTimeout(() => {
+            showModal('Pago No Completado', 'El pago no se realizó en Mercado Pago. Mantenemos tu carrito intacto con todos los productos para que puedas intentar nuevamente.');
+          }, 300);
         }
       } catch (e) {
         console.warn('Error checking Mercado Pago return:', e);

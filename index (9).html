@@ -2737,7 +2737,7 @@
 
     function navigateToProduct(id) {
       if (window.STATIC_EXPORT_MODE) {
-        window.location.href = (window.BASE_PATH || '') + 'producto/' + id + '/';
+        window.location.href = (window.BASE_PATH || '') + 'producto/' + encodeURIComponent(id) + '/';
       } else {
         navigateToHash('producto-' + id);
       }

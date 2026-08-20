@@ -1,15 +1,4 @@
 {
-  "version": 2,
-  "outputDirectory": ".",
   "cleanUrls": true,
-  "trailingSlash": false,
-  "routes": [
-    {
-      "src": "/api/(.*)",
-      "dest": "/api/$1"
-    },
-    {
-      "handle": "filesystem"
-    }
-  ]
+  "trailingSlash": false
 }

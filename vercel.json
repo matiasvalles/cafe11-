@@ -15,15 +15,7 @@
       "destination": "/producto/:id/index.html"
     },
     {
-      "source": "/producto/:id.html",
-      "destination": "/producto/:id/index.html"
-    },
-    {
       "source": "/productos",
-      "destination": "/productos/index.html"
-    },
-    {
-      "source": "/productos/",
       "destination": "/productos/index.html"
     },
     {
@@ -31,23 +23,11 @@
       "destination": "/nosotros/index.html"
     },
     {
-      "source": "/nosotros/",
-      "destination": "/nosotros/index.html"
-    },
-    {
       "source": "/contacto",
       "destination": "/contacto/index.html"
     },
     {
-      "source": "/contacto/",
-      "destination": "/contacto/index.html"
-    },
-    {
       "source": "/checkout",
-      "destination": "/checkout/index.html"
-    },
-    {
-      "source": "/checkout/",
       "destination": "/checkout/index.html"
     }
   ]

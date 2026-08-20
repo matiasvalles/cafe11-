@@ -2518,8 +2518,32 @@
       } catch (e) {}
     }
 
-    // Global routing helper to handle sandboxed iframe hashchange reliability
+    // Global routing helper to handle sandboxed iframe hashchange reliability and static export page jumps
     window.navigateToHash = function(hash, shouldScroll) {
+      if (window.STATIC_EXPORT_MODE) {
+        const clean = (hash || '').replace(/^#/, '').toLowerCase();
+        const bp = window.BASE_PATH || '';
+        if (!clean || clean === 'inicio' || clean === 'home') {
+          window.location.href = bp === '' ? './' : bp;
+          return;
+        } else if (clean === 'productos') {
+          window.location.href = bp + 'productos/';
+          return;
+        } else if (clean === 'nosotros' || clean === 'sobre-nosotros') {
+          window.location.href = bp + 'nosotros/';
+          return;
+        } else if (clean === 'contacto') {
+          window.location.href = bp + 'contacto/';
+          return;
+        } else if (clean === 'checkout') {
+          window.location.href = bp + 'checkout/';
+          return;
+        } else if (clean.startsWith('producto-')) {
+          const pId = hash.replace(/^#producto-/, '');
+          window.location.href = bp + 'producto/' + pId + '/';
+          return;
+        }
+      }
       window.location.hash = hash;
       const doScroll = shouldScroll !== undefined ? shouldScroll : !isBuilderMode;
       handleRouting(doScroll);
@@ -9148,12 +9172,19 @@
       const anchor = e.target.closest('a');
       if (anchor) {
         const href = anchor.getAttribute('href');
-        if (!href || href === '#' || href === '' || href === '/' || href === '/index.html' || href === './' || href.startsWith('http://localhost:3000')) {
-          e.preventDefault();
-          navigateToHash('#inicio');
-        } else if (href.startsWith('#')) {
-          e.preventDefault();
-          navigateToHash(href);
+        if (window.STATIC_EXPORT_MODE) {
+          if (href && href.startsWith('#')) {
+            e.preventDefault();
+            navigateToHash(href);
+          }
+        } else {
+          if (!href || href === '#' || href === '' || href === '/' || href === '/index.html' || href === './' || href.startsWith('http://localhost:3000')) {
+            e.preventDefault();
+            navigateToHash('#inicio');
+          } else if (href.startsWith('#')) {
+            e.preventDefault();
+            navigateToHash(href);
+          }
         }
       }
     });

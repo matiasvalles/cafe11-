@@ -1,0 +1,38 @@
+{
+  "version": 2,
+  "cleanUrls": true,
+  "trailingSlash": false,
+  "routes": [
+    {
+      "src": "/api/(.*)",
+      "dest": "/api/$1"
+    },
+    {
+      "handle": "filesystem"
+    },
+    {
+      "src": "/productos/?",
+      "dest": "/productos/index.html"
+    },
+    {
+      "src": "/nosotros/?",
+      "dest": "/nosotros/index.html"
+    },
+    {
+      "src": "/contacto/?",
+      "dest": "/contacto/index.html"
+    },
+    {
+      "src": "/checkout/?",
+      "dest": "/checkout/index.html"
+    },
+    {
+      "src": "/producto/([^/]+)/?",
+      "dest": "/producto/$1/index.html"
+    },
+    {
+      "src": "/([^/]+)/?",
+      "dest": "/$1/index.html"
+    }
+  ]
+}

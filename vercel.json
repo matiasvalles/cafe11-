@@ -1,13 +1,11 @@
 {
-  "cleanUrls": true,
-  "trailingSlash": false,
   "rewrites": [
     {
-      "source": "/producto/:id",
-      "destination": "/producto/:id/index.html"
+      "source": "/productos",
+      "destination": "/productos/index.html"
     },
     {
-      "source": "/productos",
+      "source": "/productos/",
       "destination": "/productos/index.html"
     },
     {
@@ -15,12 +13,80 @@
       "destination": "/nosotros/index.html"
     },
     {
+      "source": "/nosotros/",
+      "destination": "/nosotros/index.html"
+    },
+    {
       "source": "/contacto",
+      "destination": "/contacto/index.html"
+    },
+    {
+      "source": "/contacto/",
       "destination": "/contacto/index.html"
     },
     {
       "source": "/checkout",
       "destination": "/checkout/index.html"
+    },
+    {
+      "source": "/checkout/",
+      "destination": "/checkout/index.html"
+    },
+    {
+      "source": "/producto/p-3",
+      "destination": "/producto/p-3/index.html"
+    },
+    {
+      "source": "/producto/p-3/",
+      "destination": "/producto/p-3/index.html"
+    },
+    {
+      "source": "/producto/p-y9uhe0y",
+      "destination": "/producto/p-y9uhe0y/index.html"
+    },
+    {
+      "source": "/producto/p-y9uhe0y/",
+      "destination": "/producto/p-y9uhe0y/index.html"
+    },
+    {
+      "source": "/producto/p-pw5ev3m",
+      "destination": "/producto/p-pw5ev3m/index.html"
+    },
+    {
+      "source": "/producto/p-pw5ev3m/",
+      "destination": "/producto/p-pw5ev3m/index.html"
+    },
+    {
+      "source": "/producto/p-8ulc04w",
+      "destination": "/producto/p-8ulc04w/index.html"
+    },
+    {
+      "source": "/producto/p-8ulc04w/",
+      "destination": "/producto/p-8ulc04w/index.html"
+    },
+    {
+      "source": "/producto/p-6amape7",
+      "destination": "/producto/p-6amape7/index.html"
+    },
+    {
+      "source": "/producto/p-6amape7/",
+      "destination": "/producto/p-6amape7/index.html"
+    },
+    {
+      "source": "/producto/p-83uap4p",
+      "destination": "/producto/p-83uap4p/index.html"
+    },
+    {
+      "source": "/producto/p-83uap4p/",
+      "destination": "/producto/p-83uap4p/index.html"
+    },
+    {
+      "source": "/producto/p-lsb0pue",
+      "destination": "/producto/p-lsb0pue/index.html"
+    },
+    {
+      "source": "/producto/p-lsb0pue/",
+      "destination": "/producto/p-lsb0pue/index.html"
     }
   ]
 }

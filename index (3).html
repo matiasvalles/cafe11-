@@ -2490,9 +2490,6 @@
   
   <script>
     
-    window.STATIC_EXPORT_MODE = true;
-    window.BASE_PATH = "../../";
-    window.FORCE_HASH = "producto-p-3";
     window.__MAILERLITE_CONFIG__ = {
       groupId: ""
     };
@@ -4557,33 +4554,8 @@
     function handleRouting(shouldScroll, explicitHash) {
       const doScroll = shouldScroll !== undefined ? shouldScroll : !isBuilderMode;
       try {
-        let rawHash = explicitHash !== undefined ? explicitHash : (window.location.hash || '');
-        if (!rawHash && window.FORCE_HASH) {
-          rawHash = window.FORCE_HASH.startsWith('#') ? window.FORCE_HASH : '#' + window.FORCE_HASH;
-        }
-        if (!rawHash) {
-          try {
-            const path = (window.location.pathname || '').toLowerCase();
-            if (path.includes('/producto/')) {
-              const parts = window.location.pathname.split(//producto//i);
-              if (parts[1]) {
-                const prodId = decodeURIComponent(parts[1].split('/')[0].split('?')[0].split('#')[0]);
-                if (prodId) rawHash = '#producto-' + prodId;
-              }
-            } else if (path.endsWith('/productos') || path.endsWith('/productos/') || path.endsWith('/productos/index.html')) {
-              rawHash = '#productos';
-            } else if (path.endsWith('/nosotros') || path.endsWith('/nosotros/') || path.endsWith('/sobre-nosotros') || path.endsWith('/sobre-nosotros/') || path.endsWith('/nosotros/index.html')) {
-              rawHash = '#sobre-nosotros';
-            } else if (path.endsWith('/contacto') || path.endsWith('/contacto/') || path.endsWith('/contacto/index.html')) {
-              rawHash = '#contacto';
-            } else if (path.endsWith('/checkout') || path.endsWith('/checkout/') || path.endsWith('/checkout/index.html')) {
-              rawHash = '#checkout';
-            } else if (path.endsWith('/cuenta') || path.endsWith('/cuenta/') || path.endsWith('/cuenta/index.html')) {
-              rawHash = '#cuenta';
-            }
-          } catch (e) {}
-        }
-        let hash = (rawHash || '').split('?')[0].split('&')[0];
+        const rawHash = explicitHash !== undefined ? explicitHash : (window.location.hash || '');
+        let hash = rawHash.split('?')[0].split('&')[0];
         if (hash.endsWith('/')) {
           hash = hash.slice(0, -1);
         }
@@ -4670,15 +4642,8 @@
         }
 
         if (hash.startsWith('#producto-')) {
-        const rawId = hash.replace('#producto-', '');
-        const decodedId = decodeURIComponent(rawId).trim();
-        const prod = products.find(p => 
-          p.id === decodedId || 
-          p.id === rawId || 
-          String(p.id).toLowerCase() === decodedId.toLowerCase() || 
-          String(p.id).toLowerCase() === rawId.toLowerCase() ||
-          encodeURIComponent(String(p.id)).toLowerCase() === rawId.toLowerCase()
-        );
+        const prodId = hash.replace('#producto-', '');
+        const prod = products.find(p => p.id === prodId);
         
         builderSections.forEach(sec => {
           const secType = sec.dataset.type;

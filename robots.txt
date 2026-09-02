@@ -5,5 +5,5 @@ Disallow: /checkout.html
 Disallow: /api/
 
 # Sitemap oficial para Google Search Console
-Sitemap: www.cafe11.com.ar/sitemap.xml
-Sitemap: www.cafe11.com.ar/sitemap
+Sitemap: cafe11.com.ar/sitemap.xml
+Sitemap: cafe11.com.ar/sitemap

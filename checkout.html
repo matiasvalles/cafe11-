@@ -10723,11 +10723,13 @@
     // resolveAuthContinueUrl quedara definida solo ahí adentro, en producción
     // window.resolveAuthContinueUrl jamás existiría.
     function resolveAuthContinueUrl() {
-      if (/^https?:///i.test(window.location.href)) {
+      var hrefLower = window.location.href.toLowerCase();
+      if (hrefLower.indexOf('http://') === 0 || hrefLower.indexOf('https://') === 0) {
         return window.location.href.split('?')[0].split('#')[0] + '#cuenta';
       }
-      if (PUBLIC_STORE_URL && /^https?:///i.test(PUBLIC_STORE_URL)) {
-        return PUBLIC_STORE_URL.replace(//+$/, '') + '/#cuenta';
+      var publicUrlLower = (PUBLIC_STORE_URL || '').toLowerCase();
+      if (PUBLIC_STORE_URL && (publicUrlLower.indexOf('http://') === 0 || publicUrlLower.indexOf('https://') === 0)) {
+        return PUBLIC_STORE_URL.replace(/[/]+$/, '') + '/#cuenta';
       }
       try {
         if (window.parent && window.parent !== window && window.parent.location && /^https?:/.test(window.parent.location.protocol)) {

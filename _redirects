@@ -1,0 +1,5 @@
+# Netlify Redirects para Sitemap & SEO
+/sitemap        /sitemap.xml    200
+/sitemap/       /sitemap.xml    200
+/api/sitemap    /sitemap.xml    200
+/api/sitemap.xml /sitemap.xml   200

@@ -3,7 +3,7 @@
 // Si cambiás productos, volvé a exportar y redesplegar para actualizar el feed.
 
 const STORE_NAME = "Cafe 11*";
-const CONFIGURED_STORE_URL = "cafe11.com.ar";
+const CONFIGURED_STORE_URL = "https://cafe11.com.ar";
 const CURRENCY = "ARS";
 const PRODUCTS = [
   {

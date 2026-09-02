@@ -10708,6 +10708,36 @@
     };
     window.FirestoreCloudEngine = FirestoreCloudEngine;
 
+    // Builds a valid http(s) continue URL for passwordless email-link
+    // sign-in. Firebase rejects the request with "INVALID_CONTINUE_URI:
+    // Missing domain in continue url" whenever this is generated from a
+    // context without a real domain — which is exactly what happens
+    // inside the editor's sandboxed preview iframe (about:srcdoc has no
+    // domain at all). The email itself is opened later in a normal
+    // browser tab, so what matters is that the URL we send Firebase is a
+    // real, valid domain — it doesn't need to be "the current page".
+    // NOTA: esta función se define a nivel superior (y no adentro de
+    // createSandboxFirebaseAuth) porque en un sitio ya publicado normalmente
+    // se usa el SDK oficial de Firebase (window.firebase) en vez del adaptador
+    // sandbox, y en ese camino createSandboxFirebaseAuth nunca se llama. Si
+    // resolveAuthContinueUrl quedara definida solo ahí adentro, en producción
+    // window.resolveAuthContinueUrl jamás existiría.
+    function resolveAuthContinueUrl() {
+      if (/^https?:///i.test(window.location.href)) {
+        return window.location.href.split('?')[0].split('#')[0] + '#cuenta';
+      }
+      if (PUBLIC_STORE_URL && /^https?:///i.test(PUBLIC_STORE_URL)) {
+        return PUBLIC_STORE_URL.replace(//+$/, '') + '/#cuenta';
+      }
+      try {
+        if (window.parent && window.parent !== window && window.parent.location && /^https?:/.test(window.parent.location.protocol)) {
+          return window.parent.location.origin + window.parent.location.pathname + '#cuenta';
+        }
+      } catch (e) {}
+      return null;
+    }
+    window.resolveAuthContinueUrl = resolveAuthContinueUrl;
+
     /**
      * Complete Sandbox-compatible Firebase Auth adapter using standard Identity Toolkit HTTPS REST API.
      * Guarantees 100% full Firebase functionality even inside restricted iframes, srcdoc, or about: protocols.
@@ -10727,30 +10757,6 @@
       function safeRemove(k) {
         try { localStorage.removeItem(k); } catch (e) {}
       }
-
-      // Builds a valid http(s) continue URL for passwordless email-link
-      // sign-in. Firebase rejects the request with "INVALID_CONTINUE_URI:
-      // Missing domain in continue url" whenever this is generated from a
-      // context without a real domain — which is exactly what happens
-      // inside the editor's sandboxed preview iframe (about:srcdoc has no
-      // domain at all). The email itself is opened later in a normal
-      // browser tab, so what matters is that the URL we send Firebase is a
-      // real, valid domain — it doesn't need to be "the current page".
-      function resolveAuthContinueUrl() {
-        if (/^https?:\/\//i.test(window.location.href)) {
-          return window.location.href.split('?')[0].split('#')[0] + '#cuenta';
-        }
-        if (PUBLIC_STORE_URL && /^https?:\/\//i.test(PUBLIC_STORE_URL)) {
-          return PUBLIC_STORE_URL.replace(/\/+$/, '') + '/#cuenta';
-        }
-        try {
-          if (window.parent && window.parent !== window && window.parent.location && /^https?:/.test(window.parent.location.protocol)) {
-            return window.parent.location.origin + window.parent.location.pathname + '#cuenta';
-          }
-        } catch (e) {}
-        return null;
-      }
-      window.resolveAuthContinueUrl = resolveAuthContinueUrl;
 
       function formatAuthError(rawMsg) {
         const str = String(rawMsg || '');

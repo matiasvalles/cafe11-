@@ -5,7 +5,7 @@
 const STORE_NAME = "Cafe 11*";
 const CONFIGURED_STORE_URL = "https://cafe11.com.ar";
 const CURRENCY = "ARS";
-const STORE_CODE = "13569411259983608108";
+const STORE_CODE = "5512109050183543829";
 const PRODUCTS = [
   {
     "id": "p-3",

@@ -5,6 +5,7 @@
 const STORE_NAME = "Cafe 11*";
 const CONFIGURED_STORE_URL = "https://cafe11.com.ar";
 const CURRENCY = "ARS";
+const STORE_CODE = "";
 const PRODUCTS = [
   {
     "id": "p-3",
@@ -184,6 +185,9 @@ export async function feedXmlHandler(req, res) {
       xml += `      <g:price>1000.00 ${escapeXml(CURRENCY)}</g:price>\n`;
       xml += `      <g:condition>new</g:condition>\n`;
       xml += `      <g:brand>${escapeXml(STORE_NAME)}</g:brand>\n`;
+      if (STORE_CODE) {
+        xml += `      <g:store_code>${escapeXml(STORE_CODE)}</g:store_code>\n`;
+      }
       xml += `    </item>\n`;
     } else {
       for (const prod of activeList) {
@@ -227,6 +231,9 @@ export async function feedXmlHandler(req, res) {
         }
         if (prod.category) {
           xml += `      <g:product_type>${escapeXml(prod.category)}</g:product_type>\n`;
+        }
+        if (STORE_CODE) {
+          xml += `      <g:store_code>${escapeXml(STORE_CODE)}</g:store_code>\n`;
         }
         xml += `    </item>\n`;
       }

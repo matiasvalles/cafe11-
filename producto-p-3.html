@@ -36,7 +36,95 @@
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bagel+Fat+One:wght@400;500;600;700&display=swap">
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap">
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script><script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
-  <script>window.___gcfg = { lang: "es" };</script><script src="https://apis.google.com/js/platform.js" async defer></script>
+  
+  <!-- Google Customer Reviews - Opt-in Module (Image 1) -->
+  <script>
+    window.___gcfg = { lang: "es" };
+    window.renderOptIn = function(explicitOrder) {
+      if (!window.gapi) return;
+      var gr = window.__GOOGLE_REVIEWS_CONFIG__ || {
+        merchantId: "5840847143",
+        deliveryCountry: "AR",
+        estimatedDeliveryDays: 4,
+        optInStyle: "CENTER_DIALOG"
+      };
+      var order = explicitOrder || window.__CURRENT_ORDER__ || window.__LAST_COMPLETED_ORDER__ || (function() {
+        try {
+          var h = JSON.parse(localStorage.getItem('user_orders_history_v1') || '[]');
+          return h.length > 0 ? h[0] : null;
+        } catch(e) { return null; }
+      })();
+      if (!order) return;
+
+      var orderEmail = (order.customer && order.customer.email) ? order.customer.email : (order.buyerEmail || order.email || '');
+      var orderIdStr = String(order.id || order.orderId || 'ORD-' + Date.now()).replace(/^#/, '');
+      var days = Number(gr.estimatedDeliveryDays) || 4;
+      var targetDate = new Date(Date.now() + days * 24 * 60 * 60 * 1000);
+      var yyyy = targetDate.getFullYear();
+      var mm = String(targetDate.getMonth() + 1).padStart(2, '0');
+      var dd = String(targetDate.getDate()).padStart(2, '0');
+      var estDate = yyyy + '-' + mm + '-' + dd;
+
+      var surveyPayload = {
+        // REQUIRED FIELDS
+        "merchant_id": Number(gr.merchantId) || 5840847143,
+        "order_id": orderIdStr,
+        "email": orderEmail,
+        "delivery_country": gr.deliveryCountry || "AR",
+        "estimated_delivery_date": estDate,
+        // OPTIONAL FIELDS
+        "opt_in_style": gr.optInStyle || "CENTER_DIALOG"
+      };
+
+      if (order.items && Array.isArray(order.items) && order.items.length > 0) {
+        var gtins = [];
+        order.items.forEach(function(item) {
+          var gtin = item.gtin || item.barcode || (item.product && (item.product.gtin || item.product.barcode));
+          if (gtin) gtins.push({ "gtin": String(gtin) });
+        });
+        if (gtins.length > 0) {
+          surveyPayload.products = gtins;
+        }
+      }
+
+      window.gapi.load('surveyoptin', function() {
+        if (window.gapi.surveyoptin && typeof window.gapi.surveyoptin.render === 'function') {
+          window.gapi.surveyoptin.render(surveyPayload);
+        }
+      });
+    };
+    window.renderGoogleReviewsOptIn = window.renderOptIn;
+  </script>
+  <script src="https://apis.google.com/js/platform.js?onload=renderOptIn" async defer></script>
+
+  <!-- Google Merchant Center / Customer Reviews Badge Widget (Image 2) -->
+  <script id='merchantWidgetScript' src="https://www.gstatic.com/shopping/merchant/merchantwidget.js" defer></script>
+  <script>
+    (function() {
+      function startMerchantWidget() {
+        if (window.merchantwidget && typeof window.merchantwidget.start === 'function') {
+          try {
+            window.merchantwidget.start({
+              // REQUIRED FIELDS
+              merchant_id: 5840847143,
+              // OPTIONAL FIELDS
+              position: "BOTTOM_RIGHT",
+              region: "AR"
+            });
+          } catch(e) {
+            console.warn("Merchant Widget start error:", e);
+          }
+        }
+      }
+      var widgetScript = document.getElementById('merchantWidgetScript');
+      if (widgetScript) {
+        widgetScript.addEventListener('load', startMerchantWidget);
+      }
+      if (window.merchantwidget) {
+        startMerchantWidget();
+      }
+    })();
+  </script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"Product","name":"Colombia - San Antonio 250g","description":"Origen: San Antonio, Tolima – Colombia Productor: Emanuel Enciso (1800 msnm) Variedad / Proceso: Castillo / Lavado (Washed) Datos del lote: Humedad 10,96% | Criba est. 16 (dispersión a 15) Calidad: 84.3 Puntos SCA (Promedio) Notas de Cata: Una taza limpia de cuerpo medio y una acidez cítrica jugosa . Su perfil principal destaca por su dulzura, notas a nueces y descriptores florales . Como notas secundarias, revela destellos de cacao suave y frutas ligeras que redondean la experiencia.","image":["https://res.cloudinary.com/dcyhj7pzd/image/upload/v1784390805/Colombia_mockup_kanpea.png"],"sku":"SKU-COL-SAN-ANT-126","offers":{"@type":"Offer","priceCurrency":"ARS","price":24900,"availability":"https://schema.org/InStock","itemCondition":"https://schema.org/NewCondition"}}</script>
   <style>
     
@@ -1181,7 +1269,7 @@
     /* Visual Inserter Dividers */
     .iframe-insert-divider {
       position: relative;
-      height: 16px;
+      height: 0;
       margin: 0;
       padding: 0;
       display: flex;
@@ -1190,6 +1278,17 @@
       background: transparent;
       transition: all 0.2s ease;
       z-index: 50;
+      overflow: visible;
+    }
+    .iframe-insert-divider::after {
+      content: "";
+      position: absolute;
+      top: -12px;
+      bottom: -12px;
+      left: 0;
+      right: 0;
+      z-index: 1;
+      cursor: pointer;
     }
     .iframe-insert-divider::before {
       content: "";
@@ -1200,12 +1299,10 @@
       background: var(--color-accent);
       opacity: 0;
       transition: opacity 0.2s ease;
-    }
-    .iframe-insert-divider:hover {
-      height: 32px;
+      z-index: 2;
     }
     .iframe-insert-divider:hover::before {
-      opacity: 0.6;
+      opacity: 0.8;
     }
     .iframe-insert-btn {
       position: absolute;
@@ -1225,6 +1322,7 @@
       opacity: 0;
       transform: scale(0.8);
       transition: all 0.2s ease;
+      z-index: 3;
     }
     .iframe-insert-divider:hover .iframe-insert-btn {
       opacity: 1;
@@ -2766,6 +2864,9 @@
 </script>
     
     </div>
+<style id="style-hero">
+#hero, #hero.section-style-wrapper, #section-hero, #section-hero.builder-section, #hero > section, #hero .hero-section, #hero .hero-section-slider { width: 100% !important; max-width: 100% !important; padding: 0 !important; margin: 0 !important; }
+</style>
       </div>
       <!-- END SECTION: hero -->
     
@@ -2839,7 +2940,7 @@
 </section></div>
 <style id="style-sec-jt1kwlb">
 #sec-jt1kwlb { padding-top: 25px !important;padding-bottom: 25px !important; }
-#sec-jt1kwlb > section, #sec-jt1kwlb .hero-section, #sec-jt1kwlb .hero-section-slider, #sec-jt1kwlb .features-section, #sec-jt1kwlb .about-section, #sec-jt1kwlb .text-section, #sec-jt1kwlb .video-section, #sec-jt1kwlb .products-section, #sec-jt1kwlb .testimonials-section, #sec-jt1kwlb .faq-section, #sec-jt1kwlb .contact-section, #sec-jt1kwlb .shipping-section, #sec-jt1kwlb .banner-section, #sec-jt1kwlb .image-section, #sec-jt1kwlb .image-text-section, #sec-jt1kwlb .carousel-section, #sec-jt1kwlb .featured-product-section, #sec-jt1kwlb .interactive-points-section, #sec-jt1kwlb .marquee-section, #sec-jt1kwlb .newsletter-section, #sec-jt1kwlb .footer-section { padding-top: 25px !important;padding-bottom: 25px !important; }
+#sec-jt1kwlb > section, #sec-jt1kwlb .features-section, #sec-jt1kwlb .about-section, #sec-jt1kwlb .text-section, #sec-jt1kwlb .video-section, #sec-jt1kwlb .products-section, #sec-jt1kwlb .testimonials-section, #sec-jt1kwlb .faq-section, #sec-jt1kwlb .contact-section, #sec-jt1kwlb .shipping-section, #sec-jt1kwlb .banner-section, #sec-jt1kwlb .image-section, #sec-jt1kwlb .image-text-section, #sec-jt1kwlb .carousel-section, #sec-jt1kwlb .featured-product-section, #sec-jt1kwlb .interactive-points-section, #sec-jt1kwlb .marquee-section, #sec-jt1kwlb .newsletter-section, #sec-jt1kwlb .footer-section { padding-top: 25px !important;padding-bottom: 25px !important; }
 #sec-jt1kwlb h1, #sec-jt1kwlb h2, #sec-jt1kwlb h3, #sec-jt1kwlb h4, #sec-jt1kwlb h5, #sec-jt1kwlb h6, #sec-jt1kwlb .section-title { margin-top: 0 !important; margin-bottom: 4px !important; line-height: 1 !important; }
 #sec-jt1kwlb .slide-tagline, #sec-jt1kwlb .section-tagline { margin-top: 0 !important; margin-bottom: 2px !important; line-height: 1.1 !important; }
 #sec-jt1kwlb p, #sec-jt1kwlb .section-subtitle { margin-top: 0 !important; margin-bottom: 8px !important; }
@@ -2914,7 +3015,7 @@
 #sec-20z6fde, #sec-20z6fde > section, #sec-20z6fde .hero-section, #sec-20z6fde .hero-section-slider, #sec-20z6fde .features-section, #sec-20z6fde .about-section, #sec-20z6fde .text-section, #sec-20z6fde .video-section, #sec-20z6fde .products-section, #sec-20z6fde .testimonials-section, #sec-20z6fde .faq-section, #sec-20z6fde .contact-section, #sec-20z6fde .shipping-section, #sec-20z6fde .banner-section, #sec-20z6fde .image-section, #sec-20z6fde .image-text-section, #sec-20z6fde .carousel-section, #sec-20z6fde .featured-product-section, #sec-20z6fde .interactive-points-section, #sec-20z6fde .short-videos-section, #sec-20z6fde .marquee-section, #sec-20z6fde .newsletter-section, #sec-20z6fde .footer-section { background-color: #e8d5b7 !important;background: #e8d5b7 !important;color: #2b1a10 !important; }
 #sec-20z6fde p, #sec-20z6fde h1, #sec-20z6fde h2, #sec-20z6fde h3, #sec-20z6fde h4, #sec-20z6fde h5, #sec-20z6fde h6, #sec-20z6fde span, #sec-20z6fde div, #sec-20z6fde li, #sec-20z6fde a, #sec-20z6fde select, #sec-20z6fde input, #sec-20z6fde label { color: #2b1a10 !important; }
 #sec-20z6fde { padding-top: 45px !important; }
-#sec-20z6fde > section, #sec-20z6fde .hero-section, #sec-20z6fde .hero-section-slider, #sec-20z6fde .features-section, #sec-20z6fde .about-section, #sec-20z6fde .text-section, #sec-20z6fde .video-section, #sec-20z6fde .products-section, #sec-20z6fde .testimonials-section, #sec-20z6fde .faq-section, #sec-20z6fde .contact-section, #sec-20z6fde .shipping-section, #sec-20z6fde .banner-section, #sec-20z6fde .image-section, #sec-20z6fde .image-text-section, #sec-20z6fde .carousel-section, #sec-20z6fde .featured-product-section, #sec-20z6fde .interactive-points-section, #sec-20z6fde .marquee-section, #sec-20z6fde .newsletter-section, #sec-20z6fde .footer-section { padding-top: 45px !important; }
+#sec-20z6fde > section, #sec-20z6fde .features-section, #sec-20z6fde .about-section, #sec-20z6fde .text-section, #sec-20z6fde .video-section, #sec-20z6fde .products-section, #sec-20z6fde .testimonials-section, #sec-20z6fde .faq-section, #sec-20z6fde .contact-section, #sec-20z6fde .shipping-section, #sec-20z6fde .banner-section, #sec-20z6fde .image-section, #sec-20z6fde .image-text-section, #sec-20z6fde .carousel-section, #sec-20z6fde .featured-product-section, #sec-20z6fde .interactive-points-section, #sec-20z6fde .marquee-section, #sec-20z6fde .newsletter-section, #sec-20z6fde .footer-section { padding-top: 45px !important; }
 #sec-20z6fde h1, #sec-20z6fde h2, #sec-20z6fde h3, #sec-20z6fde h4, #sec-20z6fde h5, #sec-20z6fde h6, #sec-20z6fde .section-title { margin-top: 0 !important; margin-bottom: 4px !important; line-height: 1 !important; }
 #sec-20z6fde .slide-tagline, #sec-20z6fde .section-tagline { margin-top: 0 !important; margin-bottom: 2px !important; line-height: 1.1 !important; }
 #sec-20z6fde p, #sec-20z6fde .section-subtitle { margin-top: 0 !important; margin-bottom: 8px !important; }
@@ -3031,7 +3132,7 @@
 </section></div>
 <style id="style-sec-zfyreo3">
 #sec-zfyreo3 { padding-top: 45px !important; }
-#sec-zfyreo3 > section, #sec-zfyreo3 .hero-section, #sec-zfyreo3 .hero-section-slider, #sec-zfyreo3 .features-section, #sec-zfyreo3 .about-section, #sec-zfyreo3 .text-section, #sec-zfyreo3 .video-section, #sec-zfyreo3 .products-section, #sec-zfyreo3 .testimonials-section, #sec-zfyreo3 .faq-section, #sec-zfyreo3 .contact-section, #sec-zfyreo3 .shipping-section, #sec-zfyreo3 .banner-section, #sec-zfyreo3 .image-section, #sec-zfyreo3 .image-text-section, #sec-zfyreo3 .carousel-section, #sec-zfyreo3 .featured-product-section, #sec-zfyreo3 .interactive-points-section, #sec-zfyreo3 .marquee-section, #sec-zfyreo3 .newsletter-section, #sec-zfyreo3 .footer-section { padding-top: 45px !important; }
+#sec-zfyreo3 > section, #sec-zfyreo3 .features-section, #sec-zfyreo3 .about-section, #sec-zfyreo3 .text-section, #sec-zfyreo3 .video-section, #sec-zfyreo3 .products-section, #sec-zfyreo3 .testimonials-section, #sec-zfyreo3 .faq-section, #sec-zfyreo3 .contact-section, #sec-zfyreo3 .shipping-section, #sec-zfyreo3 .banner-section, #sec-zfyreo3 .image-section, #sec-zfyreo3 .image-text-section, #sec-zfyreo3 .carousel-section, #sec-zfyreo3 .featured-product-section, #sec-zfyreo3 .interactive-points-section, #sec-zfyreo3 .marquee-section, #sec-zfyreo3 .newsletter-section, #sec-zfyreo3 .footer-section { padding-top: 45px !important; }
 #sec-zfyreo3 h1, #sec-zfyreo3 h2, #sec-zfyreo3 h3, #sec-zfyreo3 h4, #sec-zfyreo3 h5, #sec-zfyreo3 h6, #sec-zfyreo3 .section-title { margin-top: 0 !important; margin-bottom: 4px !important; line-height: 1 !important; }
 #sec-zfyreo3 .slide-tagline, #sec-zfyreo3 .section-tagline { margin-top: 0 !important; margin-bottom: 2px !important; line-height: 1.1 !important; }
 #sec-zfyreo3 p, #sec-zfyreo3 .section-subtitle { margin-top: 0 !important; margin-bottom: 8px !important; }
@@ -3700,7 +3801,7 @@
 <style id="style-sec-gzcgrc2">
 #sec-gzcgrc2, #sec-gzcgrc2 > section, #sec-gzcgrc2 .hero-section, #sec-gzcgrc2 .hero-section-slider, #sec-gzcgrc2 .features-section, #sec-gzcgrc2 .about-section, #sec-gzcgrc2 .text-section, #sec-gzcgrc2 .video-section, #sec-gzcgrc2 .products-section, #sec-gzcgrc2 .testimonials-section, #sec-gzcgrc2 .faq-section, #sec-gzcgrc2 .contact-section, #sec-gzcgrc2 .shipping-section, #sec-gzcgrc2 .banner-section, #sec-gzcgrc2 .image-section, #sec-gzcgrc2 .image-text-section, #sec-gzcgrc2 .carousel-section, #sec-gzcgrc2 .featured-product-section, #sec-gzcgrc2 .interactive-points-section, #sec-gzcgrc2 .short-videos-section, #sec-gzcgrc2 .marquee-section, #sec-gzcgrc2 .newsletter-section, #sec-gzcgrc2 .footer-section { background-color: #2b1a10 !important;background: #2b1a10 !important; }
 #sec-gzcgrc2 { padding-top: 12px !important;padding-bottom: 19px !important; }
-#sec-gzcgrc2 > section, #sec-gzcgrc2 .hero-section, #sec-gzcgrc2 .hero-section-slider, #sec-gzcgrc2 .features-section, #sec-gzcgrc2 .about-section, #sec-gzcgrc2 .text-section, #sec-gzcgrc2 .video-section, #sec-gzcgrc2 .products-section, #sec-gzcgrc2 .testimonials-section, #sec-gzcgrc2 .faq-section, #sec-gzcgrc2 .contact-section, #sec-gzcgrc2 .shipping-section, #sec-gzcgrc2 .banner-section, #sec-gzcgrc2 .image-section, #sec-gzcgrc2 .image-text-section, #sec-gzcgrc2 .carousel-section, #sec-gzcgrc2 .featured-product-section, #sec-gzcgrc2 .interactive-points-section, #sec-gzcgrc2 .marquee-section, #sec-gzcgrc2 .newsletter-section, #sec-gzcgrc2 .footer-section { padding-top: 12px !important;padding-bottom: 19px !important; }
+#sec-gzcgrc2 > section, #sec-gzcgrc2 .features-section, #sec-gzcgrc2 .about-section, #sec-gzcgrc2 .text-section, #sec-gzcgrc2 .video-section, #sec-gzcgrc2 .products-section, #sec-gzcgrc2 .testimonials-section, #sec-gzcgrc2 .faq-section, #sec-gzcgrc2 .contact-section, #sec-gzcgrc2 .shipping-section, #sec-gzcgrc2 .banner-section, #sec-gzcgrc2 .image-section, #sec-gzcgrc2 .image-text-section, #sec-gzcgrc2 .carousel-section, #sec-gzcgrc2 .featured-product-section, #sec-gzcgrc2 .interactive-points-section, #sec-gzcgrc2 .marquee-section, #sec-gzcgrc2 .newsletter-section, #sec-gzcgrc2 .footer-section { padding-top: 12px !important;padding-bottom: 19px !important; }
 #sec-gzcgrc2 h1, #sec-gzcgrc2 h2, #sec-gzcgrc2 h3, #sec-gzcgrc2 h4, #sec-gzcgrc2 h5, #sec-gzcgrc2 h6, #sec-gzcgrc2 .section-title { margin-top: 0 !important; margin-bottom: 4px !important; line-height: 1 !important; }
 #sec-gzcgrc2 .slide-tagline, #sec-gzcgrc2 .section-tagline { margin-top: 0 !important; margin-bottom: 2px !important; line-height: 1.1 !important; }
 #sec-gzcgrc2 p, #sec-gzcgrc2 .section-subtitle { margin-top: 0 !important; margin-bottom: 8px !important; }
@@ -3765,7 +3866,7 @@
 </section></div>
 <style id="style-sec-about">
 #sec-about { padding-top: 40px !important; }
-#sec-about > section, #sec-about .hero-section, #sec-about .hero-section-slider, #sec-about .features-section, #sec-about .about-section, #sec-about .text-section, #sec-about .video-section, #sec-about .products-section, #sec-about .testimonials-section, #sec-about .faq-section, #sec-about .contact-section, #sec-about .shipping-section, #sec-about .banner-section, #sec-about .image-section, #sec-about .image-text-section, #sec-about .carousel-section, #sec-about .featured-product-section, #sec-about .interactive-points-section, #sec-about .marquee-section, #sec-about .newsletter-section, #sec-about .footer-section { padding-top: 40px !important; }
+#sec-about > section, #sec-about .features-section, #sec-about .about-section, #sec-about .text-section, #sec-about .video-section, #sec-about .products-section, #sec-about .testimonials-section, #sec-about .faq-section, #sec-about .contact-section, #sec-about .shipping-section, #sec-about .banner-section, #sec-about .image-section, #sec-about .image-text-section, #sec-about .carousel-section, #sec-about .featured-product-section, #sec-about .interactive-points-section, #sec-about .marquee-section, #sec-about .newsletter-section, #sec-about .footer-section { padding-top: 40px !important; }
 #sec-about h1, #sec-about h2, #sec-about h3, #sec-about h4, #sec-about h5, #sec-about h6, #sec-about .section-title { margin-top: 0 !important; margin-bottom: 4px !important; line-height: 1 !important; }
 #sec-about .slide-tagline, #sec-about .section-tagline { margin-top: 0 !important; margin-bottom: 2px !important; line-height: 1.1 !important; }
 #sec-about p, #sec-about .section-subtitle { margin-top: 0 !important; margin-bottom: 8px !important; }
@@ -3999,28 +4100,78 @@
       </div>
 
       <!-- Columna Derecha: Newsletter -->
+      <div class="footer-newsletter-col" style="display: flex; flex-direction: column; gap: 0.55rem; align-items: flex-start; max-width: 360px;">
       
-      <div style="display: flex; flex-direction: column; gap: 1rem; align-items: flex-start;">
-        <h4 style="font-size: 1.1rem; font-weight: 700; margin: 0; color: #2b1a10; font-family: var(--font-family);">Newsletter</h4>
+        <h4 style="font-size: 1.1rem; font-weight: 700; margin: 0 0 0.1rem 0; color: #2b1a10; font-family: var(--font-family); line-height: 1.2;">Newsletter</h4>
         
-            <p style="opacity: 0.8; font-size: 0.875rem; margin: 0; line-height: 1.5; max-width: 320px; color: #2b1a10;">
-              Suscríbete para recibir ofertas exclusivas, lanzamientos y cupones de descuento directo en tu correo.
+            <p style="opacity: 0.8; font-size: 0.875rem; margin: 0; line-height: 1.45; color: #2b1a10;">
+              Suscríbete para recibir ofertas exclusivas.
             </p>
           
         <form
           
           onsubmit="handleNewsletterSubmit(event, this)"
           data-mailerlite-group=""
-          style="display: flex; width: 100%; max-width: 320px; gap: 0.5rem; flex-wrap: wrap; margin-top: 0.25rem;"
+          style="display: flex; width: 100%; max-width: 340px; gap: 0.5rem; align-items: center; margin-top: 0.1rem;"
         >
-          <input type="email" name="email" class="footer-input" placeholder="Tu correo electrónico" required style="flex: 1; min-width: 160px; padding: 0.6rem 0.85rem; font-size: 0.85rem; border: 1px solid #2b1a10; border-radius: 6px; background-color: rgba(43, 26, 16, 0.1); color: #2b1a10; font-family: inherit; outline: none;" />
-          <button type="submit" class="footer-btn" style="background-color: #2b1a10; color: #E8D5B7; border: none; font-weight: 600; padding: 0.6rem 1rem; font-size: 0.85rem; border-radius: 6px; cursor: pointer; transition: opacity 0.2s; white-space: nowrap; flex-shrink: 0;" onmouseover="this.style.opacity='0.85'" onmouseout="this.style.opacity='1'">Suscribirme</button>
+          <input
+            type="email"
+            name="email"
+            class="footer-input"
+            placeholder="Tu correo electrónico"
+            required
+            style="flex: 1; min-width: 0; height: 42px; padding: 0 0.85rem; font-size: 0.875rem; border: 1px solid rgba(0,0,0,0.2); border-radius: 8px; background-color: rgba(43, 26, 16, 0.1); color: #2b1a10; font-family: inherit; outline: none; box-sizing: border-box; transition: border-color 0.2s;"
+          />
+          <button
+            type="submit"
+            class="footer-btn"
+            style="height: 42px; display: inline-flex; align-items: center; justify-content: center; background-color: #2b1a10; color: #E8D5B7; border: none; font-weight: 600; padding: 0 1.15rem; font-size: 0.85rem; border-radius: 8px; cursor: pointer; transition: opacity 0.2s, transform 0.15s; white-space: nowrap; flex-shrink: 0; box-sizing: border-box;"
+            onmouseover="this.style.opacity='0.88'; this.style.transform='scale(1.02)';"
+            onmouseout="this.style.opacity='1'; this.style.transform='scale(1)';"
+          >Suscribirme</button>
         </form>
-        <div class="newsletter-success-msg" style="display: none; padding: 0.6rem 0.85rem; background-color: rgba(16, 185, 129, 0.2); border: 1px solid rgba(16, 185, 129, 0.4); border-radius: 6px; font-size: 0.85rem; color: #2b1a10; margin-top: 0.25rem;">
+        <div class="newsletter-success-msg" style="display: none; width: 100%; max-width: 340px; padding: 0.65rem 0.85rem; background-color: rgba(16, 185, 129, 0.15); border: 1px solid rgba(16, 185, 129, 0.4); border-radius: 8px; font-size: 0.85rem; color: #2b1a10; margin-top: 0.25rem; box-sizing: border-box;">
           ¡Gracias por suscribirte a nuestro newsletter!
         </div>
-      </div>
       
+        
+        <!-- Redes Sociales debajo del Newsletter -->
+        <div class="footer-socials-wrapper" style="margin-top: 0.25rem; display: flex; flex-direction: column; gap: 0.5rem; align-items: flex-start; width: 100%; max-width: 340px;">
+          <div class="footer-socials-list" style="display: flex; align-items: center; gap: 0.6rem; flex-wrap: wrap;">
+            <a
+      href="https://instagram.com/"
+      target="_blank" rel="noopener noreferrer"
+      class="footer-social-icon-btn"
+      title="Instagram"
+      aria-label="Instagram"
+      style="display: inline-flex; align-items: center; justify-content: center; width: 34px; height: 34px; border-radius: 50%; background-color: rgba(43, 26, 16, 0.1); color: #2b1a10; border: 1px solid rgba(0,0,0,0.15); text-decoration: none; transition: transform 0.2s ease, opacity 0.2s ease, background-color 0.2s ease; opacity: 0.85; flex-shrink: 0;"
+      onmouseover="this.style.opacity='1'; this.style.transform='translateY(-2px) scale(1.08)';"
+      onmouseout="this.style.opacity='0.85'; this.style.transform='translateY(0) scale(1)';"
+    ><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="20" x="2" y="2" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" x2="17.51" y1="6.5" y2="6.5"></line></svg></a>
+<a
+      href="https://facebook.com/"
+      target="_blank" rel="noopener noreferrer"
+      class="footer-social-icon-btn"
+      title="Facebook"
+      aria-label="Facebook"
+      style="display: inline-flex; align-items: center; justify-content: center; width: 34px; height: 34px; border-radius: 50%; background-color: rgba(43, 26, 16, 0.1); color: #2b1a10; border: 1px solid rgba(0,0,0,0.15); text-decoration: none; transition: transform 0.2s ease, opacity 0.2s ease, background-color 0.2s ease; opacity: 0.85; flex-shrink: 0;"
+      onmouseover="this.style.opacity='1'; this.style.transform='translateY(-2px) scale(1.08)';"
+      onmouseout="this.style.opacity='0.85'; this.style.transform='translateY(0) scale(1)';"
+    ><svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"></path></svg></a>
+<a
+      href="https://tiktok.com/@"
+      target="_blank" rel="noopener noreferrer"
+      class="footer-social-icon-btn"
+      title="TikTok"
+      aria-label="TikTok"
+      style="display: inline-flex; align-items: center; justify-content: center; width: 34px; height: 34px; border-radius: 50%; background-color: rgba(43, 26, 16, 0.1); color: #2b1a10; border: 1px solid rgba(0,0,0,0.15); text-decoration: none; transition: transform 0.2s ease, opacity 0.2s ease, background-color 0.2s ease; opacity: 0.85; flex-shrink: 0;"
+      onmouseover="this.style.opacity='1'; this.style.transform='translateY(-2px) scale(1.08)';"
+      onmouseout="this.style.opacity='0.85'; this.style.transform='translateY(0) scale(1)';"
+    ><svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64c.298-.002.595.042.88.13V9.4a6.33 6.33 0 0 0-1-.08A6.34 6.34 0 0 0 3 15.66a6.34 6.34 0 0 0 10.82 4.48 6.3 6.3 0 0 0 1.86-4.48V8.75a8.28 8.28 0 0 0 4.91 1.6V6.9a4.83 4.83 0 0 1-1-.21z"></path></svg></a>
+          </div>
+        </div>
+        
+      </div>
 
     </div>
     <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; opacity: 0.6; font-size: 0.75rem; text-align: left; color: #2b1a10;">
@@ -4164,19 +4315,30 @@
       badgePosition: "BOTTOM_RIGHT"
     };
 
-    window.renderGoogleReviewsOptIn = function(order) {
+    window.renderOptIn = function(explicitOrder) {
       const gr = window.__GOOGLE_REVIEWS_CONFIG__;
-      if (!gr || !gr.enabled || !gr.merchantId || !order) return;
+      if (!gr || !gr.enabled || !gr.merchantId) return;
+
+      const order = explicitOrder || window.__CURRENT_ORDER__ || window.__LAST_COMPLETED_ORDER__ || (function() {
+        try {
+          const h = JSON.parse(localStorage.getItem('user_orders_history_v1') || '[]');
+          return h.length > 0 ? h[0] : null;
+        } catch(e) { return null; }
+      })();
+
+      if (!order) return;
 
       try {
-        const orderEmail = (order.customer && order.customer.email) ? order.customer.email : (order.buyerEmail || '');
-        const orderIdStr = String(order.id || '').replace(/^#/, '');
+        const orderEmail = (order.customer && order.customer.email) ? order.customer.email : (order.buyerEmail || order.email || '');
+        const orderIdStr = String(order.id || order.orderId || 'ORD-' + Date.now()).replace(/^#/, '');
 
         const surveyPayload = {
-          "merchant_id": Number(gr.merchantId) || gr.merchantId,
+          // REQUIRED FIELDS
+          "merchant_id": Number(gr.merchantId) || 5840847143,
           "order_id": orderIdStr,
           "email": orderEmail,
           "delivery_country": gr.deliveryCountry || "AR",
+          // OPTIONAL FIELDS
           "opt_in_style": gr.optInStyle || "CENTER_DIALOG"
         };
 
@@ -4228,48 +4390,62 @@
         console.warn('Google Reviews renderOptIn error:', e);
       }
     };
+    window.renderGoogleReviewsOptIn = window.renderOptIn;
 
     window.renderGoogleRatingBadge = function() {
       const gr = window.__GOOGLE_REVIEWS_CONFIG__;
       if (!gr || !gr.enabled || !gr.badgeEnabled || !gr.merchantId) return;
 
-      try {
-        function executeBadge() {
-          if (window.gapi && typeof window.gapi.load === 'function') {
-            window.gapi.load('ratingbadge', function() {
-              if (window.gapi.ratingbadge && typeof window.gapi.ratingbadge.render === 'function') {
-                let badgeContainer = document.getElementById('google-customer-reviews-badge');
-                if (!badgeContainer) {
-                  badgeContainer = document.createElement('div');
-                  badgeContainer.id = 'google-customer-reviews-badge';
-                  document.body.appendChild(badgeContainer);
-                }
-                window.gapi.ratingbadge.render(badgeContainer, {
-                  "merchant_id": Number(gr.merchantId) || gr.merchantId,
-                  "position": gr.badgePosition || "BOTTOM_RIGHT"
-                });
-              }
+      const mid = Number(gr.merchantId) || 5840847143;
+      const pos = gr.badgePosition || "BOTTOM_RIGHT";
+      const reg = gr.deliveryCountry || "AR";
+
+      function executeBadge() {
+        // Snippet 2: Google Merchant Center Widget
+        if (window.merchantwidget && typeof window.merchantwidget.start === 'function') {
+          try {
+            window.merchantwidget.start({
+              // REQUIRED FIELDS
+              merchant_id: mid,
+              // OPTIONAL FIELDS
+              position: pos,
+              region: reg
             });
+            return true;
+          } catch(e) {
+            console.warn('merchantwidget.start error:', e);
           }
         }
-
+        // Fallback for legacy gapi ratingbadge
         if (window.gapi && typeof window.gapi.load === 'function') {
-          executeBadge();
-        } else {
-          let attempts = 0;
-          const interval = setInterval(function() {
-            attempts++;
-            if (window.gapi && typeof window.gapi.load === 'function') {
-              clearInterval(interval);
-              executeBadge();
-            } else if (attempts >= 25) {
-              clearInterval(interval);
+          window.gapi.load('ratingbadge', function() {
+            if (window.gapi.ratingbadge && typeof window.gapi.ratingbadge.render === 'function') {
+              let badgeContainer = document.getElementById('google-customer-reviews-badge');
+              if (!badgeContainer) {
+                badgeContainer = document.createElement('div');
+                badgeContainer.id = 'google-customer-reviews-badge';
+                document.body.appendChild(badgeContainer);
+              }
+              window.gapi.ratingbadge.render(badgeContainer, {
+                "merchant_id": mid,
+                "position": pos
+              });
             }
-          }, 300);
+          });
+          return true;
         }
-      } catch (e) {
-        console.warn('Google Reviews rating badge error:', e);
+        return false;
       }
+
+      if (executeBadge()) return;
+
+      let attempts = 0;
+      const interval = setInterval(function() {
+        attempts++;
+        if (executeBadge() || attempts >= 25) {
+          clearInterval(interval);
+        }
+      }, 300);
     };
 
     window.__WHATSAPP_CONFIG__ = {
@@ -10142,7 +10318,11 @@
 
       // Google Customer Reviews Survey Opt-in Integration (official module)
       try {
-        if (typeof window.renderGoogleReviewsOptIn === 'function') {
+        window.__CURRENT_ORDER__ = order;
+        window.__LAST_COMPLETED_ORDER__ = order;
+        if (typeof window.renderOptIn === 'function') {
+          window.renderOptIn(order);
+        } else if (typeof window.renderGoogleReviewsOptIn === 'function') {
           window.renderGoogleReviewsOptIn(order);
         }
       } catch (e) {

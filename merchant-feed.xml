@@ -4,7 +4,7 @@
     <title>Cafe 11*</title>
     <link>https://cafe11.com.ar</link>
     <description>Catálogo de productos de Cafe 11* para Google Merchant Center</description>
-    <lastBuildDate>Sun, 06 Sep 2026 19:16:57 GMT</lastBuildDate>
+    <lastBuildDate>Sun, 06 Sep 2026 19:26:35 GMT</lastBuildDate>
     <item>
       <g:id>p-3</g:id>
       <g:title>Colombia - San Antonio 250g</g:title>
@@ -20,6 +20,7 @@ Notas de Cata: Una taza limpia de cuerpo medio y una acidez cítrica jugosa. Su 
       <g:gtin>SKU-COL-SAN-ANT-126</g:gtin>
       <g:mpn>SKU-COL-SAN-ANT-126</g:mpn>
       <g:product_type>Cafe</g:product_type>
+      <g:store_code>13569411259983608108</g:store_code>
     </item>
     <item>
       <g:id>p-y9uhe0y</g:id>
@@ -35,6 +36,7 @@ Perfil Sensorial: Un café de gran estructura y cuerpo redondo. En su perfil pri
       <g:gtin>SKU-BRA-CRI-PAU-574</g:gtin>
       <g:mpn>SKU-BRA-CRI-PAU-574</g:mpn>
       <g:product_type>Cafe</g:product_type>
+      <g:store_code>13569411259983608108</g:store_code>
     </item>
     <item>
       <g:id>p-pw5ev3m</g:id>
@@ -58,6 +60,7 @@ Perfil secundario: Nuez tostada y notas suaves de cacao. Un café de altura lava
       <g:gtin>SKU-HON-EL-OCO-227</g:gtin>
       <g:mpn>SKU-HON-EL-OCO-227</g:mpn>
       <g:product_type>Cafe</g:product_type>
+      <g:store_code>13569411259983608108</g:store_code>
     </item>
     <item>
       <g:id>p-8ulc04w</g:id>
@@ -88,6 +91,7 @@ Perfil de taza: Un café de cuerpo armonioso y perfil dulce. En boca despliega n
       <g:gtin>SKU-PER-REG-CHI-103</g:gtin>
       <g:mpn>SKU-PER-REG-CHI-103</g:mpn>
       <g:product_type>Cafe</g:product_type>
+      <g:store_code>13569411259983608108</g:store_code>
     </item>
     <item>
       <g:id>p-83uap4p</g:id>
@@ -119,6 +123,7 @@ Variedad, balance y calidad de exportación en un solo combo.</g:description>
       <g:gtin>SKU-PAC-X4-PAI-317</g:gtin>
       <g:mpn>SKU-PAC-X4-PAI-317</g:mpn>
       <g:product_type>Cafe</g:product_type>
+      <g:store_code>13569411259983608108</g:store_code>
     </item>
     <item>
       <g:id>p-6amape7</g:id>
@@ -161,6 +166,7 @@ Todo lo que necesitás para empezar desde el primer día. La cafetera incluye po
       <g:gtin>SKU-CAF-FR-E12-883</g:gtin>
       <g:mpn>SKU-CAF-FR-E12-883</g:mpn>
       <g:product_type>Máquinas</g:product_type>
+      <g:store_code>13569411259983608108</g:store_code>
     </item>
     <item>
       <g:id>p-lsb0pue</g:id>
@@ -196,6 +202,7 @@ El coraz&amp;oacute;n del molinillo est&amp;aacute; dise&amp;ntilde;ado para ofr
       <g:gtin>SKU-MOL-ITO-CGS-711</g:gtin>
       <g:mpn>SKU-MOL-ITO-CGS-711</g:mpn>
       <g:product_type>Máquinas</g:product_type>
+      <g:store_code>13569411259983608108</g:store_code>
     </item>
   </channel>
 </rss>

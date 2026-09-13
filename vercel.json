@@ -17,6 +17,30 @@
       "destination": "/robots.txt"
     },
     {
+      "source": "/feed.xml",
+      "destination": "/feed.xml"
+    },
+    {
+      "source": "/merchant-feed.xml",
+      "destination": "/merchant-feed.xml"
+    },
+    {
+      "source": "/local-feed.xml",
+      "destination": "/local-feed.xml"
+    },
+    {
+      "source": "/merchant-local-feed.xml",
+      "destination": "/merchant-local-feed.xml"
+    },
+    {
+      "source": "/api/merchant/local-feed.xml",
+      "destination": "/local-feed.xml"
+    },
+    {
+      "source": "/api/merchant/local-feed",
+      "destination": "/local-feed.xml"
+    },
+    {
       "source": "/api/sitemap",
       "destination": "/api/sitemap"
     },
@@ -39,6 +63,14 @@
     {
       "source": "/api/merchant/feed.xml",
       "destination": "/api/merchant/feed"
+    },
+    {
+      "source": "/api/merchant/feed",
+      "destination": "/api/merchant/feed"
+    },
+    {
+      "source": "/api/merchant/local-feed.xml",
+      "destination": "/api/merchant/local-feed.xml"
     },
     {
       "source": "/api/create-preference",

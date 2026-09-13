@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss xmlns:g="http://base.google.com/ns/1.0" version="2.0">
+  <channel>
+    <title>Cafe 11* - Inventario Local</title>
+    <link>https://cafe11.com.ar</link>
+    <description>Feed complementario de inventario local para Google Merchant Center</description>
+    <lastBuildDate>Sun, 13 Sep 2026 23:19:36 GMT</lastBuildDate>
+    <item>
+      <g:store_code>13569411259983608108</g:store_code>
+      <g:id>p-3</g:id>
+      <g:price>24900.00 ARS</g:price>
+      <g:quantity>20</g:quantity>
+      <g:availability>in_stock</g:availability>
+    </item>
+    <item>
+      <g:store_code>13569411259983608108</g:store_code>
+      <g:id>p-y9uhe0y</g:id>
+      <g:price>20700.00 ARS</g:price>
+      <g:quantity>20</g:quantity>
+      <g:availability>in_stock</g:availability>
+    </item>
+    <item>
+      <g:store_code>13569411259983608108</g:store_code>
+      <g:id>p-pw5ev3m</g:id>
+      <g:price>23200.00 ARS</g:price>
+      <g:quantity>20</g:quantity>
+      <g:availability>in_stock</g:availability>
+    </item>
+    <item>
+      <g:store_code>13569411259983608108</g:store_code>
+      <g:id>p-8ulc04w</g:id>
+      <g:price>21500.00 ARS</g:price>
+      <g:quantity>20</g:quantity>
+      <g:availability>in_stock</g:availability>
+    </item>
+    <item>
+      <g:store_code>13569411259983608108</g:store_code>
+      <g:id>p-83uap4p</g:id>
+      <g:price>79230.00 ARS</g:price>
+      <g:quantity>20</g:quantity>
+      <g:availability>in_stock</g:availability>
+    </item>
+    <item>
+      <g:store_code>13569411259983608108</g:store_code>
+      <g:id>p-6amape7</g:id>
+      <g:price>1190000.00 ARS</g:price>
+      <g:quantity>15</g:quantity>
+      <g:availability>in_stock</g:availability>
+    </item>
+    <item>
+      <g:store_code>13569411259983608108</g:store_code>
+      <g:id>p-lsb0pue</g:id>
+      <g:price>847000.00 ARS</g:price>
+      <g:quantity>15</g:quantity>
+      <g:availability>in_stock</g:availability>
+    </item>
+  </channel>
+</rss>

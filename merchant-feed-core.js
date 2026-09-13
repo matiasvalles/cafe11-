@@ -6,6 +6,9 @@ const STORE_NAME = "Cafe 11*";
 const CONFIGURED_STORE_URL = "https://cafe11.com.ar";
 const CURRENCY = "ARS";
 const STORE_CODE = "13569411259983608108";
+const ENABLE_LOCAL_PICKUP = false;
+const PICKUP_METHOD = "buy";
+const PICKUP_SLA = "same_day";
 const PRODUCTS = [
   {
     "id": "p-3",
@@ -234,6 +237,10 @@ export async function feedXmlHandler(req, res) {
         }
         if (STORE_CODE) {
           xml += `      <g:store_code>${escapeXml(STORE_CODE)}</g:store_code>\n`;
+        }
+        if (ENABLE_LOCAL_PICKUP) {
+          xml += `      <g:pickup_method>${escapeXml(PICKUP_METHOD)}</g:pickup_method>\n`;
+          xml += `      <g:pickup_sla>${escapeXml(PICKUP_SLA)}</g:pickup_sla>\n`;
         }
         xml += `    </item>\n`;
       }
